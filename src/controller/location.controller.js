@@ -1,5 +1,5 @@
-const  LocationStudent  = require('../model/locationStudent.model');
-const  Student  = require('../model/Student.model');
+const LocationStudent = require('../model/locationStudent.model');
+const Student = require('../model/Student.model');
 const uuid = require('uuid');
 
 const registerLocationStudent = async (req, res) => {
@@ -27,14 +27,14 @@ const registerLocationStudent = async (req, res) => {
                 }, {
                     where: {
                         idStudent: idStudent
-                    }   
+                    }
                 });
                 res.status(200).send({
                     message: "Localizacion de estudiante actualizada"
                 });
             } else {
                 LocationStudent.create({
-                    idLocationStudent:  uuid.v4(),
+                    idLocationStudent: uuid.v4(),
                     dateLocation: Date.now(),
                     idStudent: idStudent,
                     latitudeStudent: latitudeStudent,
@@ -58,4 +58,44 @@ const registerLocationStudent = async (req, res) => {
     }
 }
 
-module.exports = { registerLocationStudent }
+const getLocationStudent = async (req, res) => {
+    var { idStudent, telephoneTutor } = req.body;
+    try {
+        var student = await Student.findOne({
+            where: {
+                idStudent: idStudent,
+                telephoneTutor: telephoneTutor
+            }
+        }
+        )
+        //CREDENCIALES VALIDAS
+        if (student) {
+            //RECUPERANDO LOCALIZACION DE ALUMNO
+            const locationStudent = await LocationStudent.findOne({
+                where: {
+                    idStudent: idStudent
+                }
+            })
+            if (locationStudent) {
+                res.status(200).send({
+                    message: "Localizacion de estudiante",
+                    locationStudent
+                });
+            } else {
+                res.status(404).send({
+                    message: "No se encontró alguna localización previa del estudiante"
+                });
+            }
+        }
+    } catch (error) {
+        console.log("ERROR: ", error);
+        res.status(500).send({
+            message: "Error" + error
+        });
+
+    }
+
+
+}
+
+module.exports = { registerLocationStudent, getLocationStudent }
