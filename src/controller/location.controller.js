@@ -1,4 +1,4 @@
-const LocationStudent = require('../model/locationStudent.model');
+const LocationStudent = require('../model/LocationStudent.model');
 const Student = require('../model/Student.model');
 const uuid = require('uuid');
 
@@ -77,9 +77,14 @@ const getLocationStudent = async (req, res) => {
                 }
             })
             if (locationStudent) {
+                const locationStudentData = locationStudent.toJSON();
+                console.log("LOCATION: ", locationStudentData);
                 res.status(200).send({
-                    message: "Localizacion de estudiante",
-                    locationStudent
+                        idLocationStudent : locationStudentData.idLocationStudent,
+                        dateLocation : locationStudentData.dateLocation,
+                        idStudent : locationStudentData.idStudent,
+                        latitudeStudent : locationStudentData.latitudeStudent,
+                        longitudeStudent : locationStudentData.longitudeStudent
                 });
             } else {
                 res.status(404).send({

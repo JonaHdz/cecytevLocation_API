@@ -1,5 +1,7 @@
+require('dotenv').config();
+const passwordConnection = process.env.SQL_PASS;
 const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = new Sequelize ('cecytevlocationdb', 'root', 'minecraftPE1976', { host: 'localhost', dialect: 'mysql' }); 
+const sequelize = new Sequelize ('cecytevlocationdb', 'root', passwordConnection, { host: 'localhost', dialect: 'mysql' }); 
 
 class Attendance extends Model { }
 
