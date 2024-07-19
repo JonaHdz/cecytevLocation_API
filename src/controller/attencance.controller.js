@@ -1,6 +1,7 @@
-const Attendance = require("../model/Attendance.model")
-const Students = require("../model/Student.model")
-
+const { UUID } = require("sequelize");
+const Attendance = require("../model/Asistencia.model")
+const Students = require("../model/Estudiante.model")
+const uuid = require('uuid');
 
 const registerAttendance = async (req, res) => {
     const { typeAttendance, idStudent, idTeacher } = req.body;
@@ -19,10 +20,12 @@ const registerAttendance = async (req, res) => {
         }
 
         Attendance.create({
+            idattendances : uuid.v4(),
             dateAttendance: Date.now(),
             typeAttendance: typeAttendance,
             idStudent: idStudent,
             idTeacher: idTeacher
+            
         })
         res.status(200).send({
             nameStudent : val.nameStudent,

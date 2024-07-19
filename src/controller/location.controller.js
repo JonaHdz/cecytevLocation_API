@@ -1,5 +1,5 @@
-const LocationStudent = require('../model/LocationStudent.model');
-const Student = require('../model/Student.model');
+const LocationStudent = require('../model/LocalizacionEstudiante.model');
+const Student = require('../model/Estudiante.model');
 const uuid = require('uuid');
 
 const registerLocationStudent = async (req, res) => {
@@ -78,13 +78,12 @@ const getLocationStudent = async (req, res) => {
             })
             if (locationStudent) {
                 const locationStudentData = locationStudent.toJSON();
-                console.log("LOCATION: ", locationStudentData);
                 res.status(200).send({
-                        idLocationStudent : locationStudentData.idLocationStudent,
-                        dateLocation : locationStudentData.dateLocation,
-                        idStudent : locationStudentData.idStudent,
-                        latitudeStudent : locationStudentData.latitudeStudent,
-                        longitudeStudent : locationStudentData.longitudeStudent
+                    idLocationStudent: locationStudentData.idLocationStudent,
+                    dateLocation: locationStudentData.dateLocation,
+                    idStudent: locationStudentData.idStudent,
+                    latitudeStudent: locationStudentData.latitudeStudent,
+                    longitudeStudent: locationStudentData.longitudeStudent
                 });
             } else {
                 res.status(404).send({
@@ -97,10 +96,8 @@ const getLocationStudent = async (req, res) => {
         res.status(500).send({
             message: "Error" + error
         });
-
     }
-
-
 }
 
 module.exports = { registerLocationStudent, getLocationStudent }
+
