@@ -8,70 +8,81 @@ const moment = require('moment');
 const { where } = require('sequelize');
 require('dotenv').config();
 const key = process.env.JWT_SECRET;
-idCargo
+
 //variables para twilio
-const accountSid = '';
-const authToken = '';
+// const accountSid = '';
+// const authToken = '';
 const client = require('twilio')(accountSid, authToken);
 
-
+//Comprueba que sea un estudiante, academico o padre de familia
+//tambien debe mandar mensaje a padre de familia
 const login = async (req, res) => {
-    console.log("RECIBO: ", req.body);
-    const { idStudent, passwordStudent } = req.body;
+    const { user, passwordUser } = req.body;
+    console.log("user: ", user + " password     " + passwordUser);
     try {
         const student = await Student.findOne({
             where: {
-                matricula: idStudent,
-                contrasena: passwordStudent
+                matricula: user,
+                contrasena: passwordUser
             }
         });
         if (student) {
-            //
             var dateNow = moment().subtract(10, 'days').calendar();
             var datehour = moment().format('LT')
-            //console.log("valores de estdudent: ", student.dataValues)
-            //console.log("Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow +" a las " + datehour+ ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.")
-
-            //
-            client.messages
-                .create({
-                    body: "Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow + " a las " + datehour + ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.",
-                    from: '+15736725260',
-                    to: '+522283340036'
-                })
-
-            //
-            const tokenStudent = token.sign({ id: student, type: "student" }, key, { expiresIn: '40m' });
+            //ENVIO DE MENSAES
+            // client.messages
+            //     .create({
+            //         body: "Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow + " a las " + datehour + ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.",
+            //         from: '+',
+            //         to: '+'
+            //     })
+            const tokenStudent = token.sign({ id: user, type: "estudiante" }, key, { expiresIn: '40m' });
             res.status(200).header('auth-token', tokenStudent).send({
-                matricula: student.idStudent,
-                nombre: student.nameStudent,
+                matricula: student.matricula,
+                nombre: student.nombre,
                 apellido: student.appaterno + " " + student.apmaterno,
                 type: "student"
             });
         } else {
+            //buscar academico
             const teacher = await Teacher.findOne({
                 where: {
-                    emailDocente: idStudent,
-                    password: passwordStudent
+                    email: user,
+                    password: passwordUser
                 }
             })
             if (teacher) {
+                //buscar el cargo del academico
                 const cargo = await Cargo.findOne({
                     where: {
                         idcargo: teacher.idcargo
                     }
                 });
-                console.log("TEACHER: ", teacher);
-                const tokenStudent = token.sign({ id: idStudent, type: cargo.cargo }, key, { expiresIn: '40m' });
-                res.status(200).header('auth-token', tokenStudent).send({
-                    email: idStudent,
+                const tokenAcademic = token.sign({ id: user, type: cargo.cargo }, key, { expiresIn: '40m' });
+                res.status(200).header('auth-token', tokenAcademic).send({
+                    email: teacher.email,
                     nombre: teacher.nameTeacher,
                     tipo: cargo.cargo
                 });
             } else {
-                res.status(404).send({
-                    message: "User not found"
+                console.log("numero: " + passwordUser + "\n matricula: " + user);
+                const parent = await Student.findOne({
+                    where: {
+                        matricula: user,
+                        telefono: passwordUser
+                    }
                 });
+                if (parent) {
+                    const tokenParent = token.sign({ id: user, type: "tutor" }, key, { expiresIn: '40m' });
+                    res.status(200).header('auth-token', tokenParent).send({
+                        hijo: parent.nombre
+                    });
+                }
+                else {
+                    res.status(404).send({
+                        message: "Usuario no encontrado: " + parent
+                    });
+                }
             }
         }
     }
@@ -109,8 +120,8 @@ function sendMessage(student) {
     client.messages
         .create({
             body: "Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow + " a las " + datehour + ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.",
-            from: '+15736725260',
-            to: '+522283340036'
+            from: '+',
+            to: '+'
         })
         .then(message => console.log(message.sid))
         .done();

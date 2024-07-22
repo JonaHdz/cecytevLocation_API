@@ -20,6 +20,7 @@ Cargo.init(
     {
         sequelize,
         modelName: "cargo",
+        tableName: "cargo",
         timestamps: false
     }
 );

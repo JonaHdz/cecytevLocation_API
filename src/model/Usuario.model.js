@@ -15,7 +15,7 @@ Usuario.init({
             type: DataTypes.STRING,
             allowNull: false
         },
-        idCargo: {
+        idcargo: {
             type: DataTypes.INTEGER,
             allowNull: false
         },

@@ -3,7 +3,7 @@ const Student = require('../model/Estudiante.model');
 const uuid = require('uuid');
 
 const registerLocationStudent = async (req, res) => {
-    const { idStudent, latitudeStudent, longitudeStudent } = req.body;
+    const { matricula, latitud, longitud } = req.body;
     try {
 
         studentFinded = await Student.findOne({
@@ -16,17 +16,18 @@ const registerLocationStudent = async (req, res) => {
             //verificar que estudiante no haya registrado su ubicacion
             locationStudentFinded = await LocationStudent.findOne({
                 where: {
-                    idStudent: idStudent
+                    matricula: matricula
                 }
             });
+            //localizaicon encontrada
             if (locationStudentFinded) {
                 await LocationStudent.update({
-                    dateLocation: Date.now(),
-                    latitudeStudent: latitudeStudent,
-                    longitudeStudent: longitudeStudent
+                    fechaRegistro: locationStudentFinded.fechaRegistro + ";" + Date.now(),
+                    latitud: locationStudentFinded.latitud + ";" + latitud,
+                    longitud: locationStudentFinded.longitud + ";" + longitud
                 }, {
                     where: {
-                        idStudent: idStudent
+                        matricula: matricula
                     }
                 });
                 res.status(200).send({
@@ -34,11 +35,11 @@ const registerLocationStudent = async (req, res) => {
                 });
             } else {
                 LocationStudent.create({
-                    idLocationStudent: uuid.v4(),
-                    dateLocation: Date.now(),
-                    idStudent: idStudent,
-                    latitudeStudent: latitudeStudent,
-                    longitudeStudent: longitudeStudent
+                    idLocalizacionEstudiante: uuid.v4(),
+                    fechaRegistro: Date.now(),
+                    matricula: matricula,
+                    latitud: latitud,
+                    longitud: longitud
                 });
                 res.status(200).send({
                     message: "Localizacion de estudiante Creada"
@@ -59,38 +60,29 @@ const registerLocationStudent = async (req, res) => {
 }
 
 const getLocationStudent = async (req, res) => {
-    var { idStudent, telephoneTutor } = req.body;
+    var { matricula, telefono } = req.body;
     try {
-        var student = await Student.findOne({
+        //RECUPERANDO LOCALIZACION DE ALUMNO
+        const locationStudent = await LocationStudent.findOne({
             where: {
-                idStudent: idStudent,
-                telephoneTutor: telephoneTutor
+                matricula: matricula
             }
+        })
+        if (locationStudent) {
+            const locationStudentData = locationStudent.toJSON();
+            res.status(200).send({
+                idLocalizacionEstudiante: locationStudentData.idLocalizacionEstudiante,
+                fechaRegistro: locationStudentData.fechaRegistro,
+                matricula: locationStudentData.matricula,
+                latitud: locationStudentData.latitud,
+                longitud: locationStudentData.longitud
+            });
+        } else {
+            res.status(404).send({
+                message: "No se encontró alguna localización previa del estudiante"
+            });
         }
-        )
-        //CREDENCIALES VALIDAS
-        if (student) {
-            //RECUPERANDO LOCALIZACION DE ALUMNO
-            const locationStudent = await LocationStudent.findOne({
-                where: {
-                    idStudent: idStudent
-                }
-            })
-            if (locationStudent) {
-                const locationStudentData = locationStudent.toJSON();
-                res.status(200).send({
-                    idLocationStudent: locationStudentData.idLocationStudent,
-                    dateLocation: locationStudentData.dateLocation,
-                    idStudent: locationStudentData.idStudent,
-                    latitudeStudent: locationStudentData.latitudeStudent,
-                    longitudeStudent: locationStudentData.longitudeStudent
-                });
-            } else {
-                res.status(404).send({
-                    message: "No se encontró alguna localización previa del estudiante"
-                });
-            }
-        }
+
     } catch (error) {
         console.log("ERROR: ", error);
         res.status(500).send({
@@ -99,5 +91,27 @@ const getLocationStudent = async (req, res) => {
     }
 }
 
-module.exports = { registerLocationStudent, getLocationStudent }
+const getChildrenList = async (req, res) => {
+    console.log("getChildrenList--------------------s");
+    const {telefono} = req.body;
+    //var childrenList = await LocationStudent.findAll({
+      //  telefono : telefono
+    //})
+    var childrenList = await Student.findAll({
+        where: {
+            telefono: telefono
+        }
+    });
+    if (childrenList) {
+        res.status(200).send({
+            childrenList
+        })
+    } else {
+        res.status(404).send({
+            message: "No se encontraron hijos registrados"
+        });
+    }
+}
+
+module.exports = { registerLocationStudent, getLocationStudent , getChildrenList}
 

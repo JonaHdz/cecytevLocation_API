@@ -13,12 +13,11 @@ LocalizacionEstudiante.init(
             autoIncrement: false
         },
         fechaRegistro: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull: false
         },
         matricula: {
             type: DataTypes.STRING,
-            primaryKey: true,
             allowNull: false
         },
         latitud: {
@@ -33,6 +32,7 @@ LocalizacionEstudiante.init(
     {
         sequelize,
         modelName: "localizacionEstudiante",
+        tableName: "localizacionEstudiante",
         timestamps: false
     }
 );

@@ -9,7 +9,7 @@ const registerAttendance = async (req, res) => {
     try {
         val = await Students.findOne({
             where: {
-                idStudent: idStudent
+                matricula: matricula
             }
         }); 
         if (!val) {
@@ -20,17 +20,17 @@ const registerAttendance = async (req, res) => {
         }
 
         Attendance.create({
-            idattendances : uuid.v4(),
-            dateAttendance: Date.now(),
-            typeAttendance: typeAttendance,
-            idStudent: idStudent,
-            idTeacher: idTeacher
+            idAsistencia : uuid.v4(),
+            fechaAsistencia: Date.now(),
+            tipoAsistencia: typeAttendance,
+            matricula: idStudent,
+            emailDocente: idTeacher
             
         })
         res.status(200).send({
-            nameStudent : val.nameStudent,
-            lastNameStudent : val.lastNameStudent,
-            idStudent : val.idStudent,
+            nombreEstudiante : val.nombre,
+            apeliddoEStudiantes : val.appaterno + " " + val.apmaterno,
+            matricula : val.matricula,
         });
     } catch (error) {
         console.log("ERROR: ", error);
