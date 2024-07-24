@@ -1,7 +1,7 @@
 require('dotenv').config();
 const passwordConnection = process.env.SQL_PASS;
 const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = new Sequelize ('sige', 'postgres', passwordConnection, { host: 'localhost', dialect: 'postgres' });
+const sequelize = new Sequelize ('sige', 'jonadmin', passwordConnection, { host: 'localhost', dialect: 'postgres' });
 
 
 class Estudiante extends Model {}

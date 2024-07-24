@@ -1,7 +1,7 @@
 require('dotenv').config();
 const passwordConnection = process.env.SQL_PASS;
 const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = new Sequelize ('cecytevlocationdb', 'root', passwordConnection, { host: 'localhost', dialect: 'mysql' });
+const sequelize = new Sequelize ('sige', 'jonadmin', passwordConnection, { host: 'localhost', dialect: 'postgres' });
 
 class LocationStudent extends Model { }
 

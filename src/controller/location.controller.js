@@ -103,9 +103,17 @@ const getChildrenList = async (req, res) => {
         }
     });
     if (childrenList) {
-        res.status(200).send({
-            childrenList
-        })
+
+        const childrenListFiltered = [];
+        childrenList.forEach(child => {
+            childrenListFiltered.push({
+                idStudent: child.matricula,
+                name: child.nombre + " " + child.appaterno + " " + child.apmaterno,
+            });
+        });
+    res.status(200).send({
+        childrenListFiltered
+    });
     } else {
         res.status(404).send({
             message: "No se encontraron hijos registrados"

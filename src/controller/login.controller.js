@@ -12,7 +12,7 @@ const key = process.env.JWT_SECRET;
 //variables para twilio
 // const accountSid = '';
 // const authToken = '';
-const client = require('twilio')(accountSid, authToken);
+//const client = require('twilio')(accountSid, authToken);
 
 //Comprueba que sea un estudiante, academico o padre de familia
 //tambien debe mandar mensaje a padre de familia
@@ -30,18 +30,12 @@ const login = async (req, res) => {
             var dateNow = moment().subtract(10, 'days').calendar();
             var datehour = moment().format('LT')
             //ENVIO DE MENSAES
-            // client.messages
-            //     .create({
-            //         body: "Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow + " a las " + datehour + ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.",
-            //         from: '+',
-            //         to: '+'
-            //     })
+        
             const tokenStudent = token.sign({ id: user, type: "estudiante" }, key, { expiresIn: '40m' });
             res.status(200).header('auth-token', tokenStudent).send({
-                matricula: student.matricula,
-                nombre: student.nombre,
-                apellido: student.appaterno + " " + student.apmaterno,
-                type: "student"
+                idUser: student.matricula,
+                name: student.nombre + student.appaterno + " " + student.apmaterno,
+                type: "Estudiante"
             });
         } else {
             //buscar academico
@@ -60,9 +54,9 @@ const login = async (req, res) => {
                 });
                 const tokenAcademic = token.sign({ id: user, type: cargo.cargo }, key, { expiresIn: '40m' });
                 res.status(200).header('auth-token', tokenAcademic).send({
-                    email: teacher.email,
-                    nombre: teacher.nameTeacher,
-                    tipo: cargo.cargo
+                    idUser: teacher.email,
+                    name: teacher.nombre,
+                    type: cargo.cargo
                 });
             } else {
                 console.log("numero: " + passwordUser + "\n matricula: " + user);
@@ -75,7 +69,9 @@ const login = async (req, res) => {
                 if (parent) {
                     const tokenParent = token.sign({ id: user, type: "tutor" }, key, { expiresIn: '40m' });
                     res.status(200).header('auth-token', tokenParent).send({
-                        hijo: parent.nombre
+                    idUser : user,
+                    name : parent.nombre + " " + parent.appaterno + " " + parent.apmaterno,
+                    type : "Padre"
                     });
                 }
                 else {
@@ -110,22 +106,19 @@ const getAllStudents = async (req, res) => {
     }
 }
 
-function sendMessage(student) {
-    var dateNow = moment().subtract(10, 'days').calendar();
-    var datehour = moment().format('LT')
-    //console.log("valores de estdudent: ", student.dataValues)
-    //console.log("Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow +" a las " + datehour+ ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.")
-
-    //
-    client.messages
-        .create({
-            body: "Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow + " a las " + datehour + ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.",
-            from: '+',
-            to: '+'
-        })
-        .then(message => console.log(message.sid))
-        .done();
-}
+// function sendMessage(student) {
+//     var dateNow = moment().subtract(10, 'days').calendar();
+//     var datehour = moment().format('LT')
+//     //
+//     client.messages
+//         .create({
+//             body: "Estimado pradre de familia. se le informa que su hijo " + student.nameStudent + " " + student.lastNameStudent + " con matricula " + student.idStudent + " registrò su ingreso al plantel a con fecha: " + dateNow + " a las " + datehour + ". \n\nESTE MENSAJE ES INFORMATIVO. FAVOR DE NO CONTESTAR.",
+//             from: '+',
+//             to: '+'
+//         })
+//         .then(message => console.log(message.sid))
+//         .done();
+// }
 
 const testConnection = async (req, res) => {
     try {
