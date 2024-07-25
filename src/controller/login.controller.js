@@ -67,9 +67,10 @@ const login = async (req, res) => {
                     }
                 });
                 if (parent) {
+                    //console.log("parent: ", parent);    
                     const tokenParent = token.sign({ id: user, type: "tutor" }, key, { expiresIn: '40m' });
                     res.status(200).header('auth-token', tokenParent).send({
-                    idUser : user,
+                    idUser : passwordUser,
                     name : parent.nombre + " " + parent.appaterno + " " + parent.apmaterno,
                     type : "Padre"
                     });

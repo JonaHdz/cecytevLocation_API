@@ -93,13 +93,13 @@ const getLocationStudent = async (req, res) => {
 
 const getChildrenList = async (req, res) => {
     console.log("getChildrenList--------------------s");
-    const {telefono} = req.body;
+    const {telephoneParent}  = req.body;
     //var childrenList = await LocationStudent.findAll({
       //  telefono : telefono
     //})
     var childrenList = await Student.findAll({
         where: {
-            telefono: telefono
+            telefono: telephoneParent
         }
     });
     if (childrenList) {
@@ -111,6 +111,7 @@ const getChildrenList = async (req, res) => {
                 name: child.nombre + " " + child.appaterno + " " + child.apmaterno,
             });
         });
+        console.log("lista por enviar a app: " + childrenListFiltered);
     res.status(200).send({
         childrenListFiltered
     });
