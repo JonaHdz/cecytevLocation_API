@@ -30,7 +30,7 @@ const login = async (req, res) => {
             var dateNow = moment().subtract(10, 'days').calendar();
             var datehour = moment().format('LT')
             //ENVIO DE MENSAES
-        
+            console.log("ES UN ESTUDIANTE");
             const tokenStudent = token.sign({ id: user, type: "estudiante" }, key, { expiresIn: '40m' });
             res.status(200).header('auth-token', tokenStudent).send({
                 idUser: student.matricula,
