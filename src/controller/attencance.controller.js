@@ -42,10 +42,6 @@ const registerAttendance = async (req, res) => {
             message: "Error" + error
         });
     }
-
-
-
-
 }
 
 module.exports = { registerAttendance }
